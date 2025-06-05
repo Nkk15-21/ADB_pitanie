@@ -1,3 +1,4 @@
+/* Общие настройки страницы */
 body {
     font-family: "Segoe UI", sans-serif;
     background: #f4f7f9;
@@ -7,162 +8,36 @@ body {
     animation: fadeIn 0.5s ease;
 }
 
-h1, h2 {
-    color: #2c3e50;
-    text-align: center;
-    margin-bottom: 1rem;
-}
-
-form {
-    background: #fff;
-    padding: 1rem 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 0 10px #ddd;
-    max-width: 800px;
-    margin: 1rem auto;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-label {
-    flex: 1 1 100px;
-    font-weight: bold;
-}
-
-select, input[type="text"], input[type="date"], input[type="number"] {
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    flex: 1 1 200px;
-}
-
-button {
-    background: #2980b9;
-    color: white;
-    border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-button:hover {
-    background: #3498db;
-}
-
-table {
-    border-collapse: collapse;
-    width: 100%;
-    max-width: 1000px;
-    margin: 2rem auto;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 0 15px #ddd;
-    overflow: hidden;
-}
-
-th, td {
-    padding: 0.8rem;
-    border-bottom: 1px solid #eee;
-    text-align: center;
-}
-
-th {
-    background: #ecf0f1;
-    color: #2c3e50;
-    font-weight: bold;
-}
-
-tr:hover {
-    background: #f1f9ff;
-    transition: background 0.3s ease;
-}
-
-a {
-
-    color: #2980b9;
-    text-decoration: none;
-    font-weight: bold;
-    transition: color 0.2s ease;
-    border: #2c3e50 2px solid;
-    border-radius: 10px;
-    border-collapse: separate;
-    padding: 5px;
-}
-
-a:hover {
-    color: #1abc9c;
-    text-decoration: underline;
-}
-
 /* Анимация появления */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Адаптация под мобильные */
-@media (max-width: 768px) {
-    form {
-        flex-direction: column;
-    }
-
-    table, thead, tbody, th, td, tr {
-        display: block;
-    }
-
-    td {
-        position: relative;
-        padding-left: 50%;
-    }
-
-    td::before {
-        position: absolute;
-        left: 1rem;
-        width: 45%;
-        white-space: nowrap;
-        font-weight: bold;
-        color: #555;
-    }
-
-    td:nth-of-type(1)::before { content: "Child"; }
-    td:nth-of-type(2)::before { content: "Date"; }
-    td:nth-of-type(3)::before { content: "Meal Time"; }
-    td:nth-of-type(4)::before { content: "Menu"; }
-    td:nth-of-type(5)::before { content: "Action"; }
-}
-.back-button {
-    display: inline-block;
-    background-color: #ecf0f1;
+/* Заголовки */
+h1, h2 {
     color: #2c3e50;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: bold;
-    transition: background 0.3s ease, color 0.3s ease;
+    text-align: center;
+    margin-bottom: 1rem;
 }
 
-.back-button:hover {
-    background-color: #d0e6f7;
-    color: #2980b9;
-}
+/* Центрирование главного экрана */
 .center-container {
     text-align: center;
     margin-top: 100px;
 }
 
+/* Список меню на главной */
 .menu-list {
     list-style: none;
     padding: 0;
     margin-top: 2rem;
 }
-
 .menu-list li {
     margin: 1rem 0;
 }
 
-/* Красивая кнопка-ссылка */
+/* Кнопка-ссылка на главной */
 .main-button {
     display: inline-block;
     padding: 0.6rem 1.4rem;
@@ -174,9 +49,204 @@ a:hover {
     background-color: #ecf0f1;
     transition: all 0.3s ease;
 }
-
 .main-button:hover {
     background-color: #d6eaf8;
     color: #2980b9;
     transform: scale(1.05);
+}
+
+/* Общая обёртка для форм и таблиц */
+.form-container,
+.page-container {
+    background-color: #fff;
+    max-width: 800px;
+    margin: 1rem auto 2rem;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #ddd;
+}
+
+/* Стили для форм */
+form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+label {
+    flex: 1 1 100px;
+    font-weight: bold;
+}
+select,
+input[type="text"],
+input[type="date"],
+input[type="number"] {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    flex: 1 1 200px;
+}
+
+/* Группа полей формы */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 100%;
+}
+.form-group label {
+    margin-bottom: 5px;
+}
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="date"],
+.form-group select {
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+/* Кнопки в формах */
+button {
+    background: #2980b9;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+button:hover {
+    background: #3498db;
+}
+
+/* Ссылки общего вида */
+a {
+    color: #2980b9;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.2s ease;
+    border: #2c3e50 2px solid;
+    border-radius: 10px;
+    padding: 5px;
+}
+a:hover {
+    color: #1abc9c;
+    text-decoration: underline;
+}
+
+/* Кнопка «Назад» */
+.back-button {
+    display: inline-block;
+    background-color: #ecf0f1;
+    color: #2c3e50;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+.back-button:hover {
+    background-color: #d0e6f7;
+    color: #2980b9;
+}
+
+/* Стили для таблиц (список планов питания, прочее) */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 1000px;
+    margin: 2rem auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0 15px #ddd;
+    overflow: hidden;
+}
+th, td {
+    padding: 0.8rem;
+    border-bottom: 1px solid #eee;
+    text-align: center;
+}
+th {
+    background: #ecf0f1;
+    color: #2c3e50;
+    font-weight: bold;
+}
+tr:hover {
+    background: #f1f9ff;
+    transition: background 0.3s ease;
+}
+
+/* Дополнительные классы для таблицы планов */
+.plans-table th,
+.plans-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+.plans-table th {
+    background-color: #ecf0f1;
+    font-weight: bold;
+}
+
+/* Ссылки- действия внутри таблицы */
+.edit-link,
+.delete-button {
+    background: none;
+    border: none;
+    color: #2980b9;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0;
+}
+.edit-link:hover,
+.delete-button:hover {
+    text-decoration: underline;
+}
+.inline-form {
+    display: inline-block;
+    margin: 0 5px;
+}
+.delete-button {
+    color: #c0392b;
+}
+
+/* Сообщения об ошибках и успехе */
+.error-message {
+    color: #e74c3c;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+}
+.success-message {
+    color: #27ae60;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    form {
+        flex-direction: column;
+    }
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+    td {
+        position: relative;
+        padding-left: 50%;
+    }
+    td::before {
+        position: absolute;
+        left: 1rem;
+        width: 45%;
+        white-space: nowrap;
+        font-weight: bold;
+        color: #555;
+    }
+    td:nth-of-type(1)::before { content: "Child"; }
+    td:nth-of-type(2)::before { content: "Date"; }
+    td:nth-of-type(3)::before { content: "Meal Time"; }
+    td:nth-of-type(4)::before { content: "Menu"; }
+    td:nth-of-type(5)::before { content: "Action"; }
 }

@@ -1,169 +1,141 @@
 <?php
-require('conf.php');
-require('abifunktsioonid.php');
+require_once 'conf.php';
+require_once 'abifunktsioonid.php';
+
 global $yhendus;
 
+$error = '';
+$success = '';
 
-// Удаление
-if (isset($_GET['delete'])) {
-    $id = (int)$_GET['delete'];
-    $stmt = $yhendus->prepare("DELETE FROM MealPlan WHERE mealplan_id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    echo "<p style='color:red;'> Meal plan deleted.</p>";
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $child_id     = isset($_POST['child_id'])     ? (int)$_POST['child_id']     : 0;
+    $mealtime_id  = isset($_POST['mealtime_id'])  ? (int)$_POST['mealtime_id']  : 0;
+    $date         = isset($_POST['date'])         ? trim($_POST['date'])        : '';
+    $menu_id      = isset($_POST['menu_id'])      ? (int)$_POST['menu_id']      : 0;
+
+    if ($child_id <= 0 || $mealtime_id <= 0 || $menu_id <= 0 || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+        $error = 'Некорректные данные для плана питания.';
+    } else {
+        $ok = lisaMealPlan($child_id, $mealtime_id, $date, $menu_id);
+        if (!$ok) {
+            $error = 'Ошибка при добавлении плана питания.';
+        } else {
+            $success = 'Новый план питания успешно добавлен!';
+        }
+    }
 }
 
-// Обновление
-if (isset($_POST['update_id'])) {
-    $stmt = $yhendus->prepare("UPDATE MealPlan SET child_id=?, mealtime_id=?, date=?, menu_id=? WHERE mealplan_id=?");
-    $stmt->bind_param("iisii", $_POST['child_id'], $_POST['mealtime_id'], $_POST['date'], $_POST['menu_id'], $_POST['update_id']);
-    $stmt->execute();
-    echo "<script>alert(' Meal plan updated successfully!'); window.location.href = 'index.php';</script>";
-    exit();
+$children = [];
+$res = $yhendus->query("SELECT child_id, first_name, last_name FROM Child ORDER BY first_name");
+if ($res) {
+    while ($row = $res->fetch_assoc()) {
+        $children[] = $row;
+    }
 }
 
+$mealtimes = kysiMealtimeList();
+$menus     = kysiMenuList();
 
-
-// Добавление
-if (isset($_POST['add_new'])) {
-    lisaMealPlan($_POST['child_id'], $_POST['mealtime_id'], $_POST['date'], $_POST['menu_id']);
-    echo "<script>alert(' Meal plan added successfully!'); window.location.href = 'index.php';</script>";
-    exit();
+$plans = [];
+$sql = "
+    SELECT c.first_name, c.last_name, mp.date, mt.type AS mealtime, m.title AS menu
+    FROM MealPlan mp
+    JOIN Child c       ON mp.child_id = c.child_id
+    JOIN MealTime mt   ON mp.mealtime_id = mt.mealtime_id
+    JOIN Menu m        ON mp.menu_id = m.menu_id
+    ORDER BY mp.date DESC
+";
+$resPlans = $yhendus->query($sql);
+if ($resPlans) {
+    while ($row = $resPlans->fetch_assoc()) {
+        $plans[] = $row;
+    }
 }
-
-
-
-// Выпадающие списки
-$children = $yhendus->query("SELECT child_id, first_name, last_name FROM child");
-$mealtimes = $yhendus->query("SELECT mealtime_id, type FROM mealtime");
-$menus = $yhendus->query("SELECT menu_id, title FROM menu");
-
-// Данные таблицы
-$sql = "SELECT mp.mealplan_id, c.first_name, c.last_name, mp.child_id, mp.date, mp.mealtime_id, mp.menu_id,
-               mt.type AS mealtime, m.title AS menu
-        FROM mealplan mp
-        JOIN child c ON mp.child_id = c.child_id
-        JOIN mealtime mt ON mp.mealtime_id = mt.mealtime_id
-        JOIN menu m ON mp.menu_id = m.menu_id
-        ORDER BY mp.date DESC";
-
-$plans = $yhendus->query($sql);
-
-// Для редактирования одной строки
-$edit_id = isset($_GET['edit']) ? (int)$_GET['edit'] : null;
 ?>
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <link rel="stylesheet" href="style.css">
     <meta charset="UTF-8">
-    <title>Meal Plan Management</title>
+    <title>Список планов питания</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="form-container">
+    <h2>Добавить новый план питания</h2>
 
-<h2> Meal Plans</h2>
+    <?php if ($error !== ''): ?>
+        <p class="error-message"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></p>
+    <?php elseif ($success !== ''): ?>
+        <p class="success-message"><?= htmlspecialchars($success, ENT_QUOTES, 'UTF-8'); ?></p>
+    <?php endif; ?>
 
-<!-- Добавление новой записи -->
-<form method="POST">
-    <input type="hidden" name="add_new" value="1">
-    <label>Child:</label>
-    <select name="child_id">
-        <?php $res = $yhendus->query("SELECT child_id, first_name, last_name FROM Child");
-        while ($c = $res->fetch_assoc()): ?>
-            <option value="<?= $c['child_id'] ?>"><?= htmlspecialchars($c['first_name'] . ' ' . $c['last_name']) ?></option>
-        <?php endwhile; ?>
-    </select>
+    <form method="POST" action="form_mealplan.php">
+        <div class="form-group">
+            <label for="child_id">Ребёнок:</label>
+            <select id="child_id" name="child_id" required>
+                <option value="">-- Выберите ребёнка --</option>
+                <?php foreach ($children as $c): ?>
+                    <option value="<?= $c['child_id'] ?>">
+                        <?= htmlspecialchars($c['first_name'] . ' ' . $c['last_name'], ENT_QUOTES, 'UTF-8') ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="mealtime_id">Приём пищи:</label>
+            <select id="mealtime_id" name="mealtime_id" required>
+                <option value="">-- Выберите приём пищи --</option>
+                <?php foreach ($mealtimes as $m): ?>
+                    <option value="<?= $m['mealtime_id'] ?>">
+                        <?= htmlspecialchars($m['type'], ENT_QUOTES, 'UTF-8') ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="date">Дата:</label>
+            <input type="date" id="date" name="date" required>
+        </div>
+        <div class="form-group">
+            <label for="menu_id">Пункт меню:</label>
+            <select id="menu_id" name="menu_id" required>
+                <option value="">-- Выберите меню --</option>
+                <?php foreach ($menus as $m): ?>
+                    <option value="<?= $m['menu_id'] ?>">
+                        <?= htmlspecialchars($m['title'], ENT_QUOTES, 'UTF-8') ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="form-group">
+            <button type="submit">Добавить</button>
+            <a href="index.php" class="back-button">← Назад на главную</a>
+        </div>
+    </form>
 
-    <label>Meal Time:</label>
-    <select name="mealtime_id">
-        <?php $res = $yhendus->query("SELECT mealtime_id, type FROM MealTime");
-        while ($m = $res->fetch_assoc()): ?>
-            <option value="<?= $m['mealtime_id'] ?>"><?= htmlspecialchars($m['type']) ?></option>
-        <?php endwhile; ?>
-    </select>
+    <hr>
 
-    <label>Date:</label>
-    <input type="date" name="date" required>
-
-    <label>Menu:</label>
-    <select name="menu_id">
-        <?php $res = $yhendus->query("SELECT menu_id, title FROM Menu");
-        while ($m = $res->fetch_assoc()): ?>
-            <option value="<?= $m['menu_id'] ?>"><?= htmlspecialchars($m['title']) ?></option>
-        <?php endwhile; ?>
-    </select>
-
-    <button type="submit"> Add</button>
-</form>
-
-<hr>
-
-<table border="1" cellpadding="5">
-    <tr>
-        <th>Child</th>
-        <th>Date</th>
-        <th>Meal Time</th>
-        <th>Menu</th>
-        <th>Action</th>
-    </tr>
-    <?php while ($row = $plans->fetch_assoc()): ?>
-        <?php if ($edit_id === (int)$row['mealplan_id']): ?>
-            <!-- Форма редактирования -->
+    <h2>Существующие планы питания</h2>
+    <?php if (empty($plans)): ?>
+        <p>Нет ни одного плана питания.</p>
+    <?php else: ?>
+        <table border="1" cellpadding="5" class="plans-table">
             <tr>
-                <form method="POST">
-                    <input type="hidden" name="update_id" value="<?= $row['mealplan_id'] ?>">
-                    <td>
-                        <select name="child_id">
-                            <?php $res = $yhendus->query("SELECT child_id, first_name, last_name FROM Child");
-                            while ($c = $res->fetch_assoc()): ?>
-                                <option value="<?= $c['child_id'] ?>" <?= $c['child_id'] == $row['child_id'] ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($c['first_name'] . ' ' . $c['last_name']) ?>
-                                </option>
-                            <?php endwhile; ?>
-                        </select>
-                    </td>
-                    <td><input type="date" name="date" value="<?= $row['date'] ?>" required></td>
-                    <td>
-                        <select name="mealtime_id">
-                            <?php $res = $yhendus->query("SELECT mealtime_id, type FROM MealTime");
-                            while ($m = $res->fetch_assoc()): ?>
-                                <option value="<?= $m['mealtime_id'] ?>" <?= $m['mealtime_id'] == $row['mealtime_id'] ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($m['type']) ?>
-                                </option>
-                            <?php endwhile; ?>
-                        </select>
-                    </td>
-                    <td>
-                        <select name="menu_id">
-                            <?php $res = $yhendus->query("SELECT menu_id, title FROM Menu");
-                            while ($m = $res->fetch_assoc()): ?>
-                                <option value="<?= $m['menu_id'] ?>" <?= $m['menu_id'] == $row['menu_id'] ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($m['title']) ?>
-                                </option>
-                            <?php endwhile; ?>
-                        </select>
-                    </td>
-                    <td><button type="submit">Save</button></td>
-                </form>
+                <th>Ребёнок</th>
+                <th>Дата</th>
+                <th>Приём пищи</th>
+                <th>Меню</th>
             </tr>
-        <?php else: ?>
-            <!-- Обычная строка -->
-            <tr>
-                <td><?= htmlspecialchars($row['first_name'] . ' ' . $row['last_name']) ?></td>
-                <td><?= $row['date'] ?></td>
-                <td><?= htmlspecialchars($row['mealtime']) ?></td>
-                <td><?= htmlspecialchars($row['menu']) ?></td>
-                <td>
-                    <a href="?edit=<?= $row['mealplan_id'] ?>">Edit</a> |
-                    <a href="?delete=<?= $row['mealplan_id'] ?>" onclick="return confirm('Delete this meal plan?')">Delete</a>
-                </td>
-            </tr>
-        <?php endif; ?>
-    <?php endwhile; ?>
-</table>
-<p style="text-align: center;">
-    <a href="index.php" class="back-button">← Назад на главную</a>
-</p>
+            <?php foreach ($plans as $row): ?>
+                <tr>
+                    <td><?= htmlspecialchars($row['first_name'] . ' ' . $row['last_name'], ENT_QUOTES, 'UTF-8') ?></td>
+                    <td><?= htmlspecialchars($row['date'], ENT_QUOTES, 'UTF-8') ?></td>
+                    <td><?= htmlspecialchars($row['mealtime'], ENT_QUOTES, 'UTF-8') ?></td>
+                    <td><?= htmlspecialchars($row['menu'], ENT_QUOTES, 'UTF-8') ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    <?php endif; ?>
+</div>
 </body>
 </html>

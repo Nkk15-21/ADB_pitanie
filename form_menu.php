@@ -1,34 +1,31 @@
-<?php require('conf.php');
-?>
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Add New Menu</title>
+    <title>Добавить пункт меню</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<h2>Add New Menu Item</h2>
-
-<p style="text-align: center;">
-    <a href="index.php" class="back-button">← Назад на главную</a>
-</p>
-
-<form method="POST" action="add_menu.php">
-    <label>Title:</label>
-    <input type="text" name="title" required>
-
-    <label>Description:</label>
-    <input type="text" name="description" required>
-
-    <label>Calories:</label>
-    <input type="number" name="calories" required min="0">
-
-
-    <button type="submit">Add Menu</button>
-</form>
-
+<div class="form-container">
+    <h2>Добавить новый пункт меню</h2>
+    <form method="POST" action="add_menu.php">
+        <div class="form-group">
+            <label for="title">Название:</label>
+            <input type="text" id="title" name="title" required placeholder="Введите название">
+        </div>
+        <div class="form-group">
+            <label for="description">Описание:</label>
+            <input type="text" id="description" name="description" required placeholder="Введите описание">
+        </div>
+        <div class="form-group">
+            <label for="calories">Калории:</label>
+            <input type="number" id="calories" name="calories" min="0" required placeholder="Введите количество калорий">
+        </div>
+        <div class="form-group">
+            <button type="submit">Добавить меню</button>
+            <a href="index.php" class="back-button">← Назад на главную</a>
+        </div>
+    </form>
+</div>
 </body>
 </html>
