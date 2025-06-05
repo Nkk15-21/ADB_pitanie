@@ -1,3 +1,8 @@
+<?php
+require_once 'auth.php';
+ensure_logged_in();
+ensure_admin();
+?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -19,7 +24,7 @@
         </div>
         <div class="form-group">
             <label for="calories">Калории:</label>
-            <input type="number" id="calories" name="calories" min="0" required placeholder="Введите количество калорий">
+            <input type="number" id="calories" name="calories" min="0" required placeholder="Введите калории">
         </div>
         <div class="form-group">
             <button type="submit">Добавить меню</button>

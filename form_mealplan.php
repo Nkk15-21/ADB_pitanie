@@ -1,5 +1,17 @@
 <?php
-require_once 'conf.php';
+require_once 'auth.php';
+ensure_logged_in();
+
+$user = current_user();
+// Родитель сразу перенаправляем на «только просмотр» (mealplan_list.php?view_only=1)
+if ($user['onadmin'] == 0) {
+    header("Location: mealplan_list.php?view_only=1");
+    exit();
+}
+ensure_admin(); // для всякого случая — проверка, что точно админ
+?>
+<?php
+require_once 'zoneconf.php';
 require_once 'abifunktsioonid.php';
 
 global $yhendus;

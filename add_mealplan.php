@@ -1,5 +1,5 @@
 <?php
-require_once 'conf.php';
+require_once 'zoneconf.php';
 require_once 'abifunktsioonid.php';
 
 $child      = isset($_POST['child_id'])     ? (int)$_POST['child_id']     : 0;

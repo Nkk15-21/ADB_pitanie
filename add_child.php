@@ -1,5 +1,10 @@
 <?php
-require_once 'conf.php';
+require_once 'auth.php';
+ensure_logged_in();  // отправит на login.php, если пользователь не в сессии
+ensure_admin();      // отправит 403, если текущий onadmin != 1
+?>
+<?php
+require_once 'zoneconf.php';
 require_once 'abifunktsioonid.php';
 
 $first = isset($_POST['first_name']) ? trim($_POST['first_name']) : '';

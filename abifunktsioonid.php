@@ -1,11 +1,11 @@
 <?php
-require_once 'conf.php';
+// abifunktsioonid.php
 
-/**
- * Возвращает массив объектов с данными детей, у которых имя или фамилия содержат $otsisona.
- * @param string $otsisona
- * @return array [ {id, first_name, last_name, age}, ... ]
- */
+
+require_once __DIR__ . '/auth.php';
+
+require_once __DIR__ . '/conf.php';
+
 function kysiLasteAndmed(string $otsisona = ''): array {
     global $yhendus;
 
@@ -15,7 +15,7 @@ function kysiLasteAndmed(string $otsisona = ''): array {
 
     $stmt = $yhendus->prepare("
         SELECT child_id, first_name, last_name, age
-        FROM Child
+        FROM child
         WHERE first_name LIKE ? OR last_name LIKE ?
         ORDER BY first_name
     ");
@@ -64,7 +64,7 @@ function lisaLaps(string $first_name, string $last_name, int $age) {
     }
 
     $stmt = $yhendus->prepare("
-        INSERT INTO Child (first_name, last_name, age)
+        INSERT INTO child (first_name, last_name, age)
         VALUES (?, ?, ?)
     ");
     if (!$stmt) {
@@ -101,7 +101,7 @@ function lisaMealPlan(int $child_id, int $mealtime_id, string $date, int $menu_i
     }
 
     $stmt = $yhendus->prepare("
-        INSERT INTO MealPlan (child_id, mealtime_id, date, menu_id)
+        INSERT INTO mealplan (child_id, mealtime_id, date, menu_id)
         VALUES (?, ?, ?, ?)
     ");
     if (!$stmt) {
@@ -120,14 +120,10 @@ function lisaMealPlan(int $child_id, int $mealtime_id, string $date, int $menu_i
     return true;
 }
 
-/**
- * Возвращает список пунктов меню (Menu) как массив ассоциативных массивов.
- * @return array [ ['menu_id' => ..., 'title' => ...], ... ]
- */
 function kysiMenuList(): array {
     global $yhendus;
     $result = [];
-    $res = $yhendus->query("SELECT menu_id, title FROM Menu ORDER BY title");
+    $res = $yhendus->query("SELECT menu_id, title FROM menu ORDER BY title");
     if (!$res) {
         error_log("MySQL query error (kysiMenuList): " . $yhendus->error);
         return [];
@@ -145,7 +141,7 @@ function kysiMenuList(): array {
 function kysiMealtimeList(): array {
     global $yhendus;
     $result = [];
-    $res = $yhendus->query("SELECT mealtime_id, type FROM MealTime ORDER BY type");
+    $res = $yhendus->query("SELECT mealtime_id, type FROM mealtime ORDER BY type");
     if (!$res) {
         error_log("MySQL query error (kysiMealtimeList): " . $yhendus->error);
         return [];
@@ -155,4 +151,5 @@ function kysiMealtimeList(): array {
     }
     return $result;
 }
+
 ?>

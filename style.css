@@ -1,4 +1,4 @@
-/* Общие настройки страницы */
+/* --------- ОБЩИЕ СТИЛИ (из ADB_pitanie) ---------- */
 body {
     font-family: "Segoe UI", sans-serif;
     background: #f4f7f9;
@@ -8,7 +8,7 @@ body {
     animation: fadeIn 0.5s ease;
 }
 
-/* Анимация появления */
+/* Анимация fadeIn (только в начале страницы) */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -37,7 +37,7 @@ h1, h2 {
     margin: 1rem 0;
 }
 
-/* Кнопка-ссылка на главной */
+/* Красивая кнопка-ссылка */
 .main-button {
     display: inline-block;
     padding: 0.6rem 1.4rem;
@@ -55,7 +55,7 @@ h1, h2 {
     transform: scale(1.05);
 }
 
-/* Общая обёртка для форм и таблиц */
+/* Стили для контейнеров с формами и таблицами */
 .form-container,
 .page-container {
     background-color: #fff;
@@ -86,7 +86,7 @@ input[type="number"] {
     flex: 1 1 200px;
 }
 
-/* Группа полей формы */
+/* Группа полей */
 .form-group {
     display: flex;
     flex-direction: column;
@@ -105,7 +105,7 @@ input[type="number"] {
     font-size: 1rem;
 }
 
-/* Кнопки в формах */
+/* Кнопки */
 button {
     background: #2980b9;
     color: white;
@@ -150,7 +150,7 @@ a:hover {
     color: #2980b9;
 }
 
-/* Стили для таблиц (список планов питания, прочее) */
+/* Стили для таблиц */
 table {
     border-collapse: collapse;
     width: 100%;
@@ -176,7 +176,7 @@ tr:hover {
     transition: background 0.3s ease;
 }
 
-/* Дополнительные классы для таблицы планов */
+/* Стили для таблицы планов (если нужны отдельные классы) */
 .plans-table th,
 .plans-table td {
     padding: 10px;
@@ -187,7 +187,7 @@ tr:hover {
     font-weight: bold;
 }
 
-/* Ссылки- действия внутри таблицы */
+/* Ссылки-действия в таблице */
 .edit-link,
 .delete-button {
     background: none;
@@ -210,7 +210,7 @@ tr:hover {
     color: #c0392b;
 }
 
-/* Сообщения об ошибках и успехе */
+/* Сообщения ошибок и успеха */
 .error-message {
     color: #e74c3c;
     font-weight: bold;
@@ -224,7 +224,7 @@ tr:hover {
     margin-bottom: 15px;
 }
 
-/* Адаптивность для мобильных устройств */
+/* Адаптивность под мобильные (из ADB_pitanie) */
 @media (max-width: 768px) {
     form {
         flex-direction: column;
